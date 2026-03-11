@@ -1,6 +1,8 @@
 
+# from django.core import serializers
+from rest_framework import serializers
 from booking.models import Session, SessionSlot
-from users import serializers
+# from users import serializers
 
 
 class SessionSlotSerializer(serializers.ModelSerializer):
@@ -19,12 +21,12 @@ class SessionSerializer(serializers.ModelSerializer):
     def validate(self, data):
         request = self.context["request"]
         learner = request.user
-        userskill = data["userskill"]
+        userSkill = data["userSkill"]
 
         # Prevent duplicate pending
         existing = Session.objects.filter(
             learner=learner,
-            userskill=userskill,
+            userSkill=userSkill,
             status="pending"
         ).exists()
 
@@ -38,9 +40,9 @@ class SessionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context["request"]
         learner = request.user
-        userskill = validated_data["userskill"]
+        userSkill = validated_data["userSkill"]
 
-        mentor = userskill.user
+        mentor = userSkill.user
 
         return Session.objects.create(
             mentor=mentor,

@@ -1,7 +1,7 @@
 # Create your views here.
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
-from .serializers import MentorSerializer, RegistrationSerializer, UserSerializer, SkillSerializer, UserSkillSerializer
+from .serializers import MentorProfileSerializer, MentorSerializer, RegistrationSerializer, UserSerializer, SkillSerializer, UserSkillSerializer
 from .models import Skill, UserSkill
 from rest_framework.permissions import IsAuthenticated
 
@@ -53,4 +53,11 @@ class MentorListView(generics.ListAPIView):
             queryset = queryset.filter(skill_id=skillid)
 
         return queryset.select_related("user", "skill")
+
+class MentorProfileView(generics.RetrieveAPIView):
+    serializer_class = MentorProfileSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return UserSkill.objects.filter(can_teach=True).select_related("user", "skill")
     

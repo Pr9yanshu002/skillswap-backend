@@ -56,7 +56,39 @@ class MentorSerializer(serializers.ModelSerializer):
         model = UserSkill
         fields = ['id', 'user', 'skill', 'level', 'skill_name', 'username', 'user_email']
 
+class MentorSkillSerializer(serializers.ModelSerializer):
+    skill_name = serializers.CharField(source='skill.name')
+    class Meta:
+        model = UserSkill
+        fields = ['id', 'skill_name', 'level']
 
+class MentorProfileSerializer(serializers.ModelSerializer):
+    mentor = serializers.SerializerMethodField()
+    skill = serializers.SerializerMethodField()
+    other_skills = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserSkill
+        fields = ['id','mentor','skill','other_skills']
+
+    def get_mentor(self, obj):
+        return {
+            'id': obj.user.id,
+            'username': obj.user.username,
+            'bio': obj.user.bio,
+        }
+
+    def get_skill(self, obj):
+        return {
+            'name': obj.skill.name,
+            'category': obj.skill.category,
+            'level': obj.level,
+        }
+
+    def get_other_skills(self, obj):
+        skills = UserSkill.objects.filter(user=obj.user, can_teach=True).exclude(id=obj.id)
+        return MentorSkillSerializer(skills, many=True).data
+                
 
 """
 Serializer lifecycle:

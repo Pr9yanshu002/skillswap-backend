@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/auth/login/', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh/', TokenRefreshView.as_view()),
     path('api/', include('users.urls')),
+    path('api/', include('booking.urls')),
 ]
