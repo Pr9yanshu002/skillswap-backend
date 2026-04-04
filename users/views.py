@@ -2,7 +2,7 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .serializers import MentorProfileSerializer, MentorSerializer, RegistrationSerializer, UserSerializer, SkillSerializer, UserSkillSerializer
-from .models import Skill, UserSkill
+from .models import Skill, User, UserSkill
 from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(generics.CreateAPIView):
@@ -60,4 +60,14 @@ class MentorProfileView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return UserSkill.objects.filter(can_teach=True).select_related("user", "skill")
+
+class UserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.prefetch_related("skills__skill")
+
+
+
+    # def get_object(self):
+    #     return self.request.user
     

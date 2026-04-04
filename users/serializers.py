@@ -15,11 +15,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return user
-    
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'email', 'username', 'bio', 'profile_image']
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,7 +42,12 @@ class UserSkillSerializer(serializers.ModelSerializer):
 
         return UserSkill.objects.create(user=user, **validated_data)
 
-
+class UserSerializer(serializers.ModelSerializer):
+    skills = UserSkillSerializer(many=True, read_only=True)
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'bio', 'profile_image', 'skills']
+        
 class MentorSerializer(serializers.ModelSerializer):
     user_email = serializers.CharField(source='user.email', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)

@@ -10,6 +10,8 @@ from django.db.models import Prefetch
 from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
+from utils.google_meet import create_meet_space
+
 # Create your views here.
 
 class SessionListCreateView(generics.ListCreateAPIView):
@@ -32,7 +34,7 @@ class SessionListCreateView(generics.ListCreateAPIView):
             Q(mentor=user) | Q(learner=user)
         )
 
-class SessionUpdateView(generics.UpdateAPIView):
+class SessionUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = SessionSerializer
     permission_classes = [IsAuthenticated]
     queryset = Session.objects.all()
@@ -111,11 +113,15 @@ class SlotSelectView(APIView):
 
         session.selected_slot = slot
         session.status = "scheduled"
+
+        meet_link = create_meet_space()
+        if meet_link:
+            session.meet_link = meet_link
         session.save()
 
         SessionSlot.objects.filter(session=session).exclude(pk=slot.pk).delete()
 
-        return Response({"detail": "Slot selected successfully."})
+        return Response({"detail": "Slot selected successfully.", "meet_link": session.meet_link})
         
 
 '''

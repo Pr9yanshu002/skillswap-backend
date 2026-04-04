@@ -15,6 +15,7 @@ class Session(models.Model):
     learner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="learner_sessions")
     userSkill = models.ForeignKey(UserSkill, on_delete=models.CASCADE)
     message = models.TextField(blank=True)
+    meet_link = models.URLField(blank=True, null=True)
 
     status = models.CharField(
         max_length=20,
