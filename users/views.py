@@ -1,4 +1,5 @@
 # Create your views here.
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .serializers import MentorProfileSerializer, MentorSerializer, RegistrationSerializer, UserSerializer, SkillSerializer, UserSkillSerializer
@@ -10,8 +11,10 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class MeView(generics.RetrieveAPIView):
+class MeView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_object(self):
         return self.request.user
